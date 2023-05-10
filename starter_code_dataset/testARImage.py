@@ -24,7 +24,8 @@ def testARImage(test_dataset_path, model, info, verbose=True):
 
     for s in range(num_test_images):
         image_full_filename = os.path.join(test_dataset_path, test_image_names[s])
-        print('Loading TEST image %d/%d: %s'%(s+1, num_test_images, image_full_filename))                
+        if verbose:
+            print('Loading TEST image %d/%d: %s'%(s+1, num_test_images, image_full_filename))                
         im = grayscale_img_load(image_full_filename) / 255.
         im = np.array(im.astype('float32'))
         im = torch.from_numpy(im)
@@ -40,6 +41,11 @@ def testARImage(test_dataset_path, model, info, verbose=True):
 
         # WRITE CODE HERE TO FIX THE DESTROYED IMAGE REGION
         # USING AN AUTOREGRESSIVE APPROACH
+        for row in range(destroy_part_x1, destroy_part_x2):
+            for col in range(destroy_part_y1, destroy_part_y2):
+                pred = model(rec_im)
+                rec_im[0, 0, row, col] = pred[0, 0, row, col]
+
 
         # measure the reconstruction error        
         diff_im = rec_im[0, 0, destroy_part_x1:destroy_part_x2, destroy_part_y1:destroy_part_y2] - im[0,  destroy_part_x1:destroy_part_x2, destroy_part_y1:destroy_part_y2]
