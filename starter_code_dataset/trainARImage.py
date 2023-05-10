@@ -71,16 +71,27 @@ def trainARImage(train_dataset_path, val_dataset_path, verbose=False, data_npy_e
         val_loss = 0
         model.train()
         for i, batch in enumerate(data_loader):
-            
-             # WRITE CODE HERE TO IMPLEMENT 
-             # THE FORWARD PASS AND BACKPROPAGATION
-             # FOR EACH PASS ALONG WITH THE L1 LOSS COMPUTATION
 
+            # WRITE CODE HERE TO IMPLEMENT 
+            # THE FORWARD PASS AND BACKPROPAGATION
+            # FOR EACH PASS ALONG WITH THE L1 LOSS COMPUTATION
+            optimizer.zero_grad()
+            pred = model(batch[0].to(device))          
+            loss = criterion(batch[0].to(device), pred)
+
+            loss.backward()
+            optimizer.step()
+            train_loss += loss.detach().cpu()
+            
             if verbose:
                 print('Epoch [%d/%d], Iter [%d/%d], Training loss: %.4f' %(epoch+1, numEpochs, i+1, len(train_imgs)//batch_size, train_loss/(i+1)))
 
         # WRITE CODE HERE TO EVALUATE THE LOSS ON THE VALIDATION DATASET
         model.eval()
+        with torch.no_grad():
+            pred = model(val_imgs.to(device))
+            val_loss = criterion(val_imgs.to(device), pred)
+            val_loss = val_loss.detach().cpu()
 
         # show the plots
         if epoch != 0:            
