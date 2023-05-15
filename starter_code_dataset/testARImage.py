@@ -41,10 +41,11 @@ def testARImage(test_dataset_path, model, info, verbose=True):
 
         # WRITE CODE HERE TO FIX THE DESTROYED IMAGE REGION
         # USING AN AUTOREGRESSIVE APPROACH
-        for row in range(destroy_part_x1, destroy_part_x2):
-            for col in range(destroy_part_y1, destroy_part_y2):
-                pred = model(rec_im)
-                rec_im[0, 0, row, col] = pred[0, 0, row, col]
+        with torch.no_grad():
+            for row in range(destroy_part_x1, destroy_part_x2):
+                for col in range(destroy_part_y1, destroy_part_y2):
+                    pred = model(rec_im)
+                    rec_im[0, 0, row, col] = pred[0, 0, row, col]
 
 
         # measure the reconstruction error        
